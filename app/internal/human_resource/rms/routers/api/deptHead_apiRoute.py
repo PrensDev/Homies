@@ -26,8 +26,10 @@ router = APIRouter(prefix = "/api/department-head")
 AUTHORIZED_SUBSYSTEM = "Recruitment"
 AUTHORIZED_ROLE = "Department Head"
 
+# ====================================================================
+# USER INFORMATION
+# ====================================================================
 
-# User Information
 @router.get("/info", response_model = user.ShowUserInfo)
 def get_user_info(
     db: Session = Depends(get_db), 
@@ -39,6 +41,21 @@ def get_user_info(
             if not user_info:
                 raise HTTPException(status_code = 404, detail = {"message": "Employee does not exist"})
             return user_info
+    except Exception as e:
+        print(e)
+
+# ====================================================================
+# NOTIFICATIONS
+# ====================================================================
+
+@router.get("/notifications", response_model = List[main.ShowRecruitmentNotifications])
+def get_notifications(
+    db: Session = Depends(get_db), 
+    user_data: UserData = Depends(get_user)
+):
+    try:
+        if isAuthorized(user_data, AUTHORIZED_SUBSYSTEM, AUTHORIZED_ROLE):
+            return db.query(RecruitmentNotification).filter(RecruitmentNotification.employee_id == user_data.employee_id).all()
     except Exception as e:
         print(e)
 

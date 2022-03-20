@@ -371,6 +371,18 @@ class Employee(Base):
         "InternalUser",
         back_populates = "employee_info"
     )
+
+    # To Recruitment Notification
+    notifications = relationship(
+        "RecruitmentNotification",
+        back_populates = "notification_for",
+        foreign_keys = "RecruitmentNotification.employee_id"
+    )
+    created_notifications = relationship(
+        "RecruitmentNotification",
+        back_populates = "notification_created_by",
+        foreign_keys = "RecruitmentNotification.author_id"
+    )
     
     # To ManpowerRequst
     requested_manpower_requests = relationship(
@@ -1507,6 +1519,78 @@ class Position(Base):
     onboarding_employees = relationship(
         "OnboardingEmployee",
         back_populates = "onboarding_employee_position"
+    )
+
+
+# Recruitment Notifications Model
+class RecruitmentNotification(Base):
+    __tablename__ = "recruitment_notifications"
+
+    # ==================================================================================
+    # Columns
+    # ==================================================================================
+
+    notification_id = Column(
+        String(36),
+        primary_key=True,
+        default = text('UUID()')
+    )
+    employee_id = Column(
+        String(36),
+        ForeignKey('employees.employee_id'),
+        nullable = False
+    )
+    notification_type = Column(
+        String(255),
+        nullable = False
+    )
+    notification_subtype = Column(
+        String(255),
+        nullable = False
+    )
+    link = Column(
+        String(255),
+        nullable = False
+    )
+    author_id = Column(
+        String(36),
+        ForeignKey('employees.employee_id'),
+        nullable = True
+    )
+    reference_id = Column(
+        String(36),
+        nullable = True
+    )
+    is_unread = Column(
+        Boolean,
+        nullable = False,
+        default = True
+    )
+    is_removed = Column(
+        Boolean,
+        nullable = False,
+        default = False
+    )
+    created_at = Column(
+        DateTime,
+        nullable = False,
+        default = text('NOW()')
+    )
+    
+    # ==================================================================================
+    # Relationship (From other tables/models)
+    # ==================================================================================
+
+    # From SubDepartment
+    notification_for = relationship(
+        "Employee",
+        back_populates = "notifications",
+        foreign_keys = "RecruitmentNotification.employee_id"
+    )
+    notification_created_by = relationship(
+        "Employee",
+        back_populates = "created_notifications",
+        foreign_keys = "RecruitmentNotification.author_id"
     )
 
 

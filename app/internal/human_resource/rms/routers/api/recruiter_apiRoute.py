@@ -2,6 +2,7 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
+from pydantic import BaseModel
 from sqlalchemy import cast, func, and_, text, Date
 from sqlalchemy.orm import Session
 from database import get_db
@@ -34,7 +35,10 @@ AUTHORIZED_SUBSYSTEM = "Recruitment"
 AUTHORIZED_ROLE = "Talent Recruiter"
 
 
-# User Information
+# ====================================================================
+# USER INFORMATION
+# ====================================================================
+
 @router.get("/info", response_model = user.ShowUserInfo)
 def get_user_info(
     db: Session = Depends(get_db), 
@@ -423,15 +427,33 @@ def end_recruiting(
 APPLICANT_NOT_FOUND_RESPONSE = {"message": "Applicant not found"}
 
 
+class ShowApplicantsDT(BaseModel):
+    draw: Optional[str]
+    total: Optional[int]
+    data: List[recruiter.ShowApplicant]
+
 # Get All Applicants
-@router.get("/applicants", response_model = List[recruiter.ShowApplicant])
+@router.get("/applicants", response_model = ShowApplicantsDT)
 def get_all_applicants(
+    draw = Optional[int],
+    start = Optional[int],
+    length = Optional[int],
     db: Session = Depends(get_db),
     user_data: UserData = Depends(get_user)
 ):
     try:
         if isAuthorized(user_data, AUTHORIZED_SUBSYSTEM, AUTHORIZED_ROLE):
-            return db.query(Applicant).all()
+            draw = int(draw)
+            start = int(start)
+            length = int(length)
+
+            totalRecords = db.query(Applicant).count()
+            
+            return {
+                "draw": draw,
+                "total": totalRecords,
+                "data": db.query(Applicant).slice(start, start + length).all()
+            }
     except Exception as e:
         print(e)
 

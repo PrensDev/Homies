@@ -237,7 +237,7 @@ initDataTable('#manpowerRequestDT', {
     // debugMode: true,
     enableButtons: true,
     columns: [
-
+        
         // Created At (For Default Sorting)
         { data: 'created_at', visible: false },
 

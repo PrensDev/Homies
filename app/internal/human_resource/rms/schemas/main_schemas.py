@@ -146,3 +146,18 @@ class UserCredentials(BaseModel):
 
     class Config():
         orm_mode = True
+
+
+class ShowRecruitmentNotifications(BaseModel):
+    notification_id: str
+    notification_type: str
+    notification_subtype: str
+    link: str
+    notification_created_by: Optional[ShowEmployee]
+    reference_id: Optional[str]
+    is_unread: bool
+    is_removed: bool
+    created_at: datetime
+    
+    class Config():
+        orm_mode = True

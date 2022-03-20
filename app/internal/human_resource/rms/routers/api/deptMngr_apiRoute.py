@@ -22,7 +22,10 @@ AUTHORIZED_SUBSYSTEM = "Recruitment"
 AUTHORIZED_ROLE = "Department Manager"
 
 
-# User Information
+# ====================================================================
+# USER INFORMATION
+# ====================================================================
+
 @router.get("/info", response_model = user.ShowUserInfo)
 def get_user_info(
     db: Session = Depends(get_db), 
@@ -35,6 +38,22 @@ def get_user_info(
                 raise HTTPException(status_code = 404, detail = {"message": "Employee does not exist"})
             else:
                 return user_info
+    except Exception as e:
+        print(e)
+
+
+# ====================================================================
+# NOTIFICATIONS
+# ====================================================================
+
+@router.get("/notifications", response_model = List[main.ShowRecruitmentNotifications])
+def get_notifications(
+    db: Session = Depends(get_db), 
+    user_data: UserData = Depends(get_user)
+):
+    try:
+        if isAuthorized(user_data, AUTHORIZED_SUBSYSTEM, AUTHORIZED_ROLE):
+            return db.query(RecruitmentNotification).filter(RecruitmentNotification.employee_id == user_data.employee_id).all()
     except Exception as e:
         print(e)
 
@@ -57,6 +76,8 @@ def create_manpower_request(
 ):
     try:
         if isAuthorized(user_data, AUTHORIZED_SUBSYSTEM, AUTHORIZED_ROLE):
+            
+            # Create new manpower request
             new_manpower_request = ManpowerRequest(
                 **req.dict(),
                 requested_by = user_data.employee_id, 
@@ -65,6 +86,41 @@ def create_manpower_request(
             db.add(new_manpower_request)
             db.commit()
             db.refresh(new_manpower_request)
+
+            # Compose notification for Dept. Head
+
+            # Get the user department
+            user_department = db.query(Department).join(SubDepartment).filter(
+                Department.department_id == SubDepartment.department_id
+            ).join(Position).filter(
+                SubDepartment.sub_department_id == Position.sub_department_id
+            ).join(Employee).filter(
+                Employee.employee_id == user_data.employee_id, 
+                Position.position_id == Employee.position_id
+            ).first()
+
+
+            # Get the department head
+            department_heads = db.query(Employee).join(Position).filter(
+                Position.name == "Department Head"
+            ).join(SubDepartment).join(Department).filter(
+                Department.department_id == user_department.department_id
+            ).all()
+
+            # Create notification record
+            for department_head in department_heads:
+                new_notification = RecruitmentNotification(
+                    employee_id = department_head.employee_id,
+                    notification_type = "Manpower Request",
+                    notification_subtype = "Request for Manpower",
+                    link = "manpower-requests/" + new_manpower_request.manpower_request_id,
+                    author_id = user_data.employee_id,
+                    reference_id = new_manpower_request.manpower_request_id
+                )
+                db.add(new_notification)
+                db.commit()
+                db.refresh(new_notification)
+
             return {
                 "data": new_manpower_request,
                 "message": "A manpower request has been submitted successfully"
