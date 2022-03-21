@@ -43,13 +43,14 @@ const initDataTable = (selector = "", dtOptions = {
 	const ajax = {
 		url: dtOptions.url,
 		headers: AJAX_HEADERS,
-		dataSrc: "data",
-		dataFilter: function(data){
-            var json = jQuery.parseJSON( data );
-			json.recordsTotal = json.total;
-            json.recordsFiltered = json.total;
-            return JSON.stringify( json ); // return JSON string
-        }
+		dataSrc: "",
+		// dataSrc: "data",
+		// dataFilter: function(data){
+        //     var json = jQuery.parseJSON( data );
+		// 	json.recordsTotal = json.total;
+        //     json.recordsFiltered = json.total;
+        //     return JSON.stringify( json ); // return JSON string
+        // }
 	}
 
 	const dtLanguage = {
@@ -112,12 +113,12 @@ const initDataTable = (selector = "", dtOptions = {
 		}
 	}
 	else if (dtOptions.enableButtons) dtParams = {
-		processing: true, 
-		serverSide: true,
+		// processing: true, 
+		// serverSide: true,
 		ajax: ajax,
-		search: {
-            return: true
-        },
+		// search: {
+        //     return: true
+        // },
 		columns: dtOptions.columns,
 		order: dtOrder,
 		dom: `

@@ -26,6 +26,7 @@ AUTHORIZED_ROLE = "Department Manager"
 # USER INFORMATION
 # ====================================================================
 
+# Get user information
 @router.get("/info", response_model = user.ShowUserInfo)
 def get_user_info(
     db: Session = Depends(get_db), 
@@ -46,6 +47,10 @@ def get_user_info(
 # NOTIFICATIONS
 # ====================================================================
 
+# Recruitment Notification Not Found Response
+RECRUITMENT_NOTIF_NOT_FOUND_RESPONSE = {"message": "Recruitment Notification not found"}
+
+# Get all notifications
 @router.get("/notifications", response_model = List[main.ShowRecruitmentNotifications])
 def get_notifications(
     db: Session = Depends(get_db), 
@@ -53,7 +58,30 @@ def get_notifications(
 ):
     try:
         if isAuthorized(user_data, AUTHORIZED_SUBSYSTEM, AUTHORIZED_ROLE):
-            return db.query(RecruitmentNotification).filter(RecruitmentNotification.employee_id == user_data.employee_id).all()
+            return db.query(RecruitmentNotification).filter(
+                RecruitmentNotification.employee_id == user_data.employee_id
+            ).order_by(
+                RecruitmentNotification.created_at.desc()
+            ).all()
+    except Exception as e:
+        print(e)
+
+# Unread notification
+@router.put("/notifications/{notification_id}/unread")
+def unread_notification(
+    notification_id: str,
+    db: Session = Depends(get_db), 
+    user_data: UserData = Depends(get_user)
+):
+    try:
+        if isAuthorized(user_data, AUTHORIZED_SUBSYSTEM, AUTHORIZED_ROLE):
+            notification = db.query(RecruitmentNotification).filter(RecruitmentNotification.notification_id == notification_id)
+            if not notification.first():
+                raise HTTPException(status_code=404, detail=RECRUITMENT_NOTIF_NOT_FOUND_RESPONSE)
+            else:
+                notification.update({ "is_unread": False })
+                db.commit()
+                return {"message": "A recruitment notification has been read"}
     except Exception as e:
         print(e)
 
@@ -118,8 +146,9 @@ def create_manpower_request(
                     reference_id = new_manpower_request.manpower_request_id
                 )
                 db.add(new_notification)
-                db.commit()
-                db.refresh(new_notification)
+            
+            # Commit changes
+            db.commit()
 
             return {
                 "data": new_manpower_request,
@@ -304,14 +333,26 @@ def delete_requisition(
 ):
     try:
         if isAuthorized(user_data, AUTHORIZED_SUBSYSTEM, AUTHORIZED_ROLE):
+            
             manpower_request = db.query(ManpowerRequest).filter(
                 ManpowerRequest.manpower_request_id == manpower_request_id,
                 ManpowerRequest.requested_by == user_data.employee_id
             )
+            
             if not manpower_request.first():
                 raise HTTPException(status_code=404, detail=MANPOWER_REQUEST_NOT_FOUND_RESPONSE) 
             else:
+
+                # Delete manpower request
                 manpower_request.delete(synchronize_session = False)
+                
+                # Delete notifications
+                notifications = db.query(RecruitmentNotification).filter(
+                    RecruitmentNotification.reference_id == manpower_request_id
+                )
+                notifications.delete(synchronize_session = False)
+                
+                # Commit changes
                 db.commit()
                 return {"message": "A manpower request is successfully deleted"}
     except Exception as e:

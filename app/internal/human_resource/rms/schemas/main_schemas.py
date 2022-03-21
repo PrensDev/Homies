@@ -4,6 +4,11 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 
+class DataTable(BaseModel):
+    draw: Optional[str]
+    total: Optional[int]
+
+
 class Department(BaseModel):
     department_id: str
     name: str
