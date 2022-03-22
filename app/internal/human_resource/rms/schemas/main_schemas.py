@@ -159,10 +159,10 @@ class ShowRecruitmentNotifications(BaseModel):
     notification_subtype: str
     link: str
     notification_created_by: Optional[ShowEmployee]
-    reference_id: Optional[str]
     is_unread: bool
     is_removed: bool
     created_at: datetime
+    reference: Optional[object]
     
     class Config():
         orm_mode = True

@@ -245,18 +245,61 @@ def manpower_request_approval(
                 raise HTTPException(status_code=404, detail=MANPOWER_REQUEST_NOT_FOUND_RESPONSE)
             else:
                 if req.request_status == "Approved":
+
+                    # Update manpower request status
                     manpower_request.update({
                         "request_status": req.request_status,
                         "reviewed_by": user_data.employee_id,
                         "reviewed_at": text('NOW()')
                     })
+
+                    # Create notification for dept. manager
+                    new_notification_1 = RecruitmentNotification(
+                        employee_id = manpower_request.first().requested_by,
+                        notification_type = "Manpower Request",
+                        notification_subtype = "Approved Request",
+                        link = "manpower-requests/" + manpower_request.first().manpower_request_id,
+                        author_id = user_data.employee_id,
+                        reference_id = manpower_request.first().manpower_request_id
+                    )
+
+                    # Create notification for recruiters
+                    recruiters = db.query(Employee).join(Position).filter(
+                        Position.position_id == Employee.position_id,
+                        Position.name == "Talent Recruiter"
+                    )
+                    for recruiter in recruiters:
+                        new_notification_2 = RecruitmentNotification(
+                            employee_id = recruiter.employee_id,
+                            notification_type = "Manpower Request",
+                            notification_subtype = "Approved Request",
+                            link = "manpower-requests/" + manpower_request.first().manpower_request_id,
+                            author_id = user_data.employee_id,
+                            reference_id = manpower_request.first().manpower_request_id
+                        )
+                        db.add(new_notification_2)
                 elif req.request_status == "Rejected for approval":
+
+                    # Update manpower request status
                     manpower_request.update({
                         "request_status": req.request_status,
                         "remarks": req.remarks,
                         "rejected_by": user_data.employee_id,
                         "rejected_at": text('NOW()')
                     })
+
+                    # Create notification for dept. manager
+                    new_notification_1 = RecruitmentNotification(
+                        employee_id = manpower_request.requested_by,
+                        notification_type = "Manpower Request",
+                        notification_subtype = "Rejected For Approval",
+                        link = "manpower-requests/" + manpower_request.first().manpower_request_id,
+                        author_id = user_data.employee_id,
+                        reference_id = manpower_request.first().manpower_request_id
+                    )
+
+                # Commit changes
+                db.add(new_notification_1)
                 db.commit()
                 return {"message": "A man power request has been updated"}
     except Exception as e:
