@@ -8,7 +8,6 @@
 
 const isObjNotEmpty = (obj) => { return !Object.values(obj).every(e => e === null) }
 
-
 /**
  * ============================================================
  * * Objects
@@ -381,14 +380,16 @@ validateForm('#updateApplicantInfoForm', {
         
         const formData = generateFormData('#updateApplicantInfoForm');
 
-        resume.updateApplicantInfo({
+        const data = {
             first_name: formData.get('firstName'),
             middle_name: formData.get('middleName'),
             last_name: formData.get('lastName'),
             suffix_name: formData.get('suffixName'),
             email: formData.get('email'),
             contact_number: formData.get('contactNumber')
-        });
+        }
+
+        resume.updateApplicantInfo(data);
 
         const applicantInfo = resume.getApplicantInfo()
 
@@ -441,7 +442,119 @@ onHideModal('#editSummaryModal', () => resetForm('#updateSummaryForm'));
  */
 $('#addExperienceBtn').on('click', () => {
     showModal('#addExperienceModal');
-})
+});
+
+validateForm('#addExperienceForm', {
+    rules: {
+        jobTitle: {
+            required: true
+        },
+        company: {
+            required: true
+        }
+    },
+    messages: {
+        jobTitle: {
+            required: "Job title is required"
+        },
+        company: {
+            required: "Company is required"
+        }
+    },
+    submitHandler: () => {
+        const formData = generateFormData('#addExperienceForm');
+        const data = {
+            job_title: formData.get('jobTitle'),
+            company: formData.get('company'),
+        }
+        resume.addExperience(data);
+        reloadExperiences();
+        hideModal('#addExperienceModal');
+        return false;
+    }
+});
+
+onHideModal('#addExperienceModal', () => resetForm('#addExperienceForm'));
+
+const reloadExperiences = () => {
+    const experiences = resume.getExperiences();
+    console.log(experiences);
+
+    if(experiences.length === 0) {
+        setContent('#resume_experiences', `
+            <div class="px-5 py-3 text-center font-italic text-muted">This section is empty and won’t appear in your resume.</div>
+        `);
+    } else {
+        let experiencesDOM = '';
+        experiences.forEach(e => {
+            experiencesDOM += `
+                <div class="d-flex justify-content-between mb-3" id="${ e.experience_id }">
+                    <div class="mr-3">
+                        <i class="fas fa-star text-secondary"></i>
+                    </div>
+                    <div class="flex-fill">
+                        <div class="font-weight-bold">${ e.job_title }</div>
+                        <div>${ e.company }</div>
+                        <div class="text-muted small">March 2021 - January 2022 (10 months)</div>
+                        <div class="mt-2">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ut, quam!</div>
+                    </div>
+                    <div>
+                        <div class="btn btn-sm btn-default" onclick="editExperience('${ e.experience_id }')">
+                            <i class="fas fa-pen"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        setContent('#resume_experiences', experiencesDOM);
+    }
+}
+
+const editExperience = (experience_id) => {
+    const experience = resume.getExperiences(experience_id);
+    setValue({
+        '#editExperience_experienceID': experience.experience_id,
+        '#editExperience_jobTitle': experience.job_title,
+        '#editExperience_company': experience.company,
+    });
+    showModal('#editExperienceModal');
+}
+
+validateForm('#editExperienceForm', {
+    rules: {
+        jobTitle: {
+            required: true
+        },
+        company: {
+            required: true
+        }
+    },
+    messages: {
+        jobTitle: {
+            required: "Job title is required"
+        },
+        company: {
+            required: "Company is required"
+        }
+    },
+    submitHandler: () => {
+        const formData = generateFormData('#editExperienceForm');
+        const data = {
+            job_title: formData.get('jobTitle'),
+            company: formData.get('company'),
+        }
+        resume.updateExperience(formData.get('experienceID'), data);
+        reloadExperiences();
+        hideModal('#editExperienceModal');
+        return false;
+    }
+});
+
+onHideModal('#editExperienceModal', () => resetForm('#editExperienceForm'));
+
+const removeExperience = () => {
+    showModal('#removeExperienceModal');
+}
 
 
 // var resume = new Resume({

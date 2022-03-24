@@ -56,7 +56,7 @@ def job_details(job_post_id: str, req: Request, db: Session = Depends(get_db)):
         return errTemplate.page_not_found(req)
     
     # If no error, return template response
-    return template.TemplateResponse("pages/home/job_details.html", {
+    return template.TemplateResponse("pages/home/job_details.min.html", {
         "request": req,
         "page_title": "Job Details",
         "active_navlink": "Careers"

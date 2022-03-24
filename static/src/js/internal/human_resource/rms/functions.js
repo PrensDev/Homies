@@ -323,6 +323,14 @@ const showModal = (selector) => ifSelectorExist(selector, () => $(selector).moda
 const hideModal = (selector) => ifSelectorExist(selector, () => $(selector).modal('hide'));
 
 
+/** Fix overlapping multiple modals */
+$(document).on('show.bs.modal', '.modal', function() {
+    const zIndex = 1040 + 10 * $('.modal:visible').length;
+    $(this).css('z-index', zIndex);
+    setTimeout(() => $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack'));
+});
+
+
 /** On modal was showned/hidden */
 const onHideModal = (selector, handler = () => {}) => { ifSelectorExist(selector, () => $(selector).on('hide.bs.modal', () => handler())) }
 const onShowModal = (selector, handler = () => {}) => { ifSelectorExist(selector, () => $(selector).on('show.bs.modal', () => handler())) }
