@@ -556,6 +556,194 @@ const removeExperience = () => {
     showModal('#removeExperienceModal');
 }
 
+/**
+ * Add Education
+ */
+
+$('#addEducationBtn').on('click', () => {
+    showModal('#addEducationModal');
+});
+
+validateForm('#addEducationForm', {
+    rules: {
+        school: { required: true }
+    },
+    messages: {
+        school: { required: "Please fill up this field" }
+    },
+    submitHandler: () => {
+        const formData = generateFormData('#addEducationForm');
+        
+        const data = {
+            school: formData.get('school')
+        }
+        
+        resume.addEducation(data);
+        
+        reloadEducation();
+
+        hideModal('#addEducationModal');
+
+        toastr.success('Your education has been added');
+        return false;
+    }
+});
+
+onHideModal('#addEducationModal', () => resetForm('#addEducationForm'));
+
+const reloadEducation = () => {
+    const education = resume.getEducation();
+
+    if(education.length === 0) {
+        setContent('#resume_education', `
+            <div class="px-5 py-3 text-center font-italic text-muted">This section is empty and won’t appear in your resume.</div>
+        `);
+    } else {
+        let educationDOM = '';
+    
+        education.forEach(e => {
+            educationDOM += `
+                <div class="d-flex justify-content-between mb-3">
+                    <div class="mr-3">
+                        <i class="fas fa-graduation-cap text-secondary"></i>
+                    </div>
+                    <div class="flex-fill">
+                        <div class="font-weight-bold">${ e.school }</div>
+                        <div>Bachelor of Lorem Degree Title</div>
+                        <div class="text-muted small">2021 - 2022</div>
+                    </div>
+                    <div>
+                        <div class="btn btn-sm btn-default" onclick="editEducation('${ e.education_id }')">
+                            <i class="fas fa-pen"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        setContent('#resume_education', educationDOM);
+    }
+
+}
+
+/**
+ * Edit education
+ */
+
+const editEducation = (education_id) => {
+    const education = resume.getEducation(education_id);
+
+    setValue({
+        '#editEducation_educationID': education.education_id,
+        '#editEducation_school': education.school
+    });
+
+    showModal('#editEducationModal');
+}
+
+onHideModal('#editEducationModal', () => resetForm('#editEducationForm'));
+
+validateForm('#editEducationForm', {
+    rules: {
+        school: { required: true }
+    },
+    messages: {
+        school: { required: "Please fill up this field" }
+    },
+    submitHandler: () => {
+        const formData = generateFormData('#editEducationForm');
+
+        const data = {
+            school: formData.get('school')
+        }
+
+        resume.updateEducation(formData.get('educationID'), data);
+
+        reloadEducation();
+
+        hideModal('#editEducationModal');
+
+        toastr.info('Your education has been updated');
+
+        return false;
+    }
+});
+
+/**
+ * Add Certification
+ */
+
+$('#addCertificationBtn').on('click', () => {
+    showModal('#addCertificationModal');
+});
+
+validateForm('#addCertificationForm', {
+    rules: {
+        name: { required: true }
+    },
+    messages: {
+        name: { required: "This is a required field" }
+    },
+    submitHandler: () => {
+        const formData = generateFormData('#addCertificationForm');
+
+        const data = {
+            name: formData.get('name')
+        }
+
+        resume.addCertification(data);
+
+        reloadCertifications();
+
+        return false;
+    }
+});
+
+onHideModal('#addCertificationModal', () => resetForm('#addCertificationForm'));
+
+const reloadCertifications = () => {
+    const certifications = resume.getCertifications();
+    
+    if(certifications === 0) {
+        setContent('#resume_certifications', `
+            <div class="px-5 py-3 text-center font-italic text-muted">This section is empty and won’t appear in your resume.</div>
+        `);
+    } else {
+        let certificationsDOM = '';
+
+        certifications.forEach(c => {
+            certificationsDOM += `
+                <div class="d-flex justify-content-between mb-3">
+                    <div class="mr-3">
+                        <i class="fas fa-award text-secondary"></i>
+                    </div>
+                    <div class="flex-fill">
+                        <div class="font-weight-bold">${ c.name }</div>
+                        <div>Issuer Name Sample 1</div>
+                        <div>Credential ID: 123-456-7890</div>
+                        <div class="text-muted small">Issued 2021 - Expires at 2022</div>
+                    </div>
+                    <div>
+                        <div class="btn btn-sm btn-default">
+                            <i class="fas fa-pen"></i>
+                        </div>
+                    </div>
+                </div>
+            `
+        });
+
+        setContent('#resume_certifications', certificationsDOM);
+    }
+}
+
+/**
+ * Add Award
+ */
+$('#addAwardBtn').on('click', () => {
+    showModal('#addAwardModal');
+});
+
+onHideModal('#addAwardModal', () => resetForm('#addAwardForm'));
 
 // var resume = new Resume({
 //     first_name: "Jetsun Prince",

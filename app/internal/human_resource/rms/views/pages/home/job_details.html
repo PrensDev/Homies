@@ -396,9 +396,9 @@
                                             </div>
                                         </div>
                                         <div>
-                                            <div class="btn btn-sm btn-default" id="editApplicantInfoBtn">
+                                            <button class="btn btn-sm btn-default" id="editApplicantInfoBtn">
                                                 <i class="fas fa-pen"></i>
-                                            </div>
+                                            </button>
                                         </div>
                                     </div>
 
@@ -407,9 +407,9 @@
                                     {# Summary #}
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <h5 class="m-0 font-weight-bold">Summary</h5>
-                                        <div class="btn btn-sm btn-default">
-                                            <i class="fas fa-pen" id="editSummaryBtn"></i>
-                                        </div>
+                                        <button class="btn btn-sm btn-default" id="editSummaryBtn">
+                                            <i class="fas fa-pen"></i>
+                                        </button>
                                     </div>
                                     <div id="resume_summary">
                                         <div class="px-5 py-3 text-center font-italic text-muted">This optional section can help you stand out to recruiters. If this section is empty, it will not appear on your resume.</div>
@@ -422,9 +422,9 @@
                                     <div>
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <h5 class="m-0 font-weight-bold">Experiences</h5>
-                                            <div class="btn btn-sm btn-primary" id="addExperienceBtn">
+                                            <button class="btn btn-sm btn-primary" id="addExperienceBtn">
                                                 <i class="fas fa-plus"></i>
-                                            </div>
+                                            </button>
                                         </div>
                                         <div id="resume_experiences">
                                             <div class="px-5 py-3 text-center font-italic text-muted">This section is empty and won’t appear in your resume.</div>
@@ -456,17 +456,17 @@
                                     <div>
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <h5 class="m-0 font-weight-bold">Education</h5>
-                                            <div class="btn btn-sm btn-primary">
+                                            <button class="btn btn-sm btn-primary" id="addEducationBtn">
                                                 <i class="fas fa-plus"></i>
-                                            </div>
+                                            </button>
                                         </div>
-                                        <div>
+                                        <div id="resume_education">
                                             <div class="px-5 py-3 text-center font-italic text-muted">This section is empty and won’t appear in your resume.</div>
 
                                             {# for i in range(3) %}
                                             <div class="d-flex justify-content-between mb-3">
                                                 <div class="mr-3">
-                                                    <i class="fas fa-book text-secondary"></i>
+                                                    <i class="fas fa-graduation-cap text-secondary"></i>
                                                 </div>
                                                 <div class="flex-fill">
                                                     <div class="font-weight-bold">School University Title 1</div>
@@ -489,11 +489,11 @@
                                     <div>
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <h5 class="m-0 font-weight-bold">Licenses & Certifications</h5>
-                                            <div class="btn btn-sm btn-primary">
+                                            <button class="btn btn-sm btn-primary" id="addCertificationBtn">
                                                 <i class="fas fa-plus"></i>
-                                            </div>
+                                            </button>
                                         </div>
-                                        <div>
+                                        <div id="resume_certifications">
                                             <div class="px-5 py-3 text-center font-italic text-muted">This section is empty and won’t appear in your resume.</div>
 
                                             {# for i in range(3) %}
@@ -523,11 +523,11 @@
                                     <div>
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <h5 class="m-0 font-weight-bold">Skills</h5>
-                                            <div class="btn btn-sm btn-default">
+                                            <button class="btn btn-sm btn-default" id="addSkillBtn">
                                                 <i class="fas fa-pen"></i>
-                                            </div>
+                                            </button>
                                         </div>
-                                        <div>
+                                        <div id="resume_skills">
                                             <div class="px-5 py-3 text-center font-italic text-muted">This section is empty and won’t appear in your resume.</div>
                                             
                                             {#
@@ -561,11 +561,11 @@
                                     <div>
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <h5 class="m-0 font-weight-bold">Honors & Awards</h5>
-                                            <div class="btn btn-sm btn-primary">
+                                            <div class="btn btn-sm btn-primary" id="addAwardBtn">
                                                 <i class="fas fa-plus"></i>
                                             </div>
                                         </div>
-                                        <div>
+                                        <div id="resume_awards">
                                             <div class="px-5 py-3 text-center font-italic text-muted">This section is empty and won’t appear in your resume.</div>
 
                                             {# for i in range(3) %}

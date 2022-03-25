@@ -509,7 +509,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="editExperience_startYear">Start Month</label>
+                                    <label for="editExperience_startYear">Start Year</label>
                                     <input 
                                         class="form-control"
                                         id="addExperience_startYear" 
@@ -642,6 +642,461 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 <button type="submit" class="btn btn-danger">
                     <span>Yes, remove it!</span>
+                </button>
+            </div>
+        </form> 
+    </div> 
+</div>
+
+{# Add Education Modal #}
+<div class="modal" id="addEducationModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <form class="modal-content" id="addEducationForm">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-graduation-cap text-secondary mr-2"></i>
+                    <span>Add education</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                    
+                    {# Form #}
+                    <div class="mb-3">
+                        <div class="font-weight-bold">Please fill up the required fields</div>
+                        <div class="small font-weight-bold text-danger">
+                            <span>*</span>
+                            <span>Required</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="addEducation_school">
+                            <span>School, University, or other Academic Institution</span>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="addEducation_school"
+                            name="school"
+                            placeholder="ex. Polytechnic University of the Philippines"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="addEducation_degree">
+                            <span>Degree</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="addEducation_degree"
+                            name="degree"
+                            placeholder="ex. Bachelor of Science in Information Technology"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="addEducation_studyField">
+                            <span>Field of Study</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="addEducation_studyField"
+                            name="studyField"
+                            placeholder="ex. Information Technology"
+                        >
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="addExperience_startMonth">Start Month</label>
+                                <select 
+                                    class="form-control select2"
+                                    name="startMonth" 
+                                    id="addExperience_startMonth"
+                                >
+                                    <option value="">None</option>
+                                    <option value="1">January</option>
+                                    <option value="2">Feburary</option>
+                                    <option value="3">March</option>
+                                    <option value="4">April</option>
+                                    <option value="5">May</option>
+                                    <option value="6">June</option>
+                                    <option value="7">July</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="addExperience_startYear">Start Year</label>
+                                <input 
+                                    class="form-control"
+                                    id="addExperience_startYear" 
+                                    name="startYear"
+                                    type="number" 
+                                    min="1900" 
+                                    max="2099"
+                                    step="1" 
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="addExperience_description">Description</label>
+                        <textarea 
+                            class="form-control" 
+                            name="summary" 
+                            id="addExperience_description" 
+                            rows="4"
+                            placeholder="Briefly describe your experience here ..."
+                        ></textarea>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <span>Save</span>
+                    <i class="fas fa-check ml-1"></i>
+                </button>
+            </div>
+        </form> 
+    </div> 
+</div>
+
+{# Edit Education Modal #}
+<div class="modal" id="editEducationModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <form class="modal-content" id="editEducationForm">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-graduation-cap text-secondary mr-2"></i>
+                    <span>Edit education</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                    
+                    {# Form #}
+                    <div class="mb-3">
+                        <div class="font-weight-bold">Please fill up the required fields</div>
+                        <div class="small font-weight-bold text-danger">
+                            <span>*</span>
+                            <span>Required</span>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="editEducation_educationID" name="educationID">
+
+                    <div class="form-group">
+                        <label for="editEducation_school">
+                            <span>School, University, or other Academic Institution</span>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="editEducation_school"
+                            name="school"
+                            placeholder="ex. Polytechnic University of the Philippines"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="editEducation_degree">
+                            <span>Degree</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="editEducation_degree"
+                            name="degree"
+                            placeholder="ex. Bachelor of Science in Information Technology"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="editEducation_studyField">
+                            <span>Field of Study</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="editEducation_studyField"
+                            name="studyField"
+                            placeholder="ex. Information Technology"
+                        >
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editExperience_startMonth">Start Month</label>
+                                <select 
+                                    class="form-control select2"
+                                    name="startMonth" 
+                                    id="editExperience_startMonth"
+                                >
+                                    <option value="">None</option>
+                                    <option value="1">January</option>
+                                    <option value="2">Feburary</option>
+                                    <option value="3">March</option>
+                                    <option value="4">April</option>
+                                    <option value="5">May</option>
+                                    <option value="6">June</option>
+                                    <option value="7">July</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editExperience_startYear">Start Year</label>
+                                <input 
+                                    class="form-control"
+                                    id="editExperience_startYear" 
+                                    name="startYear"
+                                    type="number" 
+                                    min="1900" 
+                                    max="2099"
+                                    step="1" 
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editExperience_description">Description</label>
+                        <textarea 
+                            class="form-control" 
+                            name="summary" 
+                            id="editExperience_description" 
+                            rows="4"
+                            placeholder="Briefly describe your experience here ..."
+                        ></textarea>
+                    </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-between align-items-center">
+                <div>
+                    <button type="button" class="btn btn-danger">
+                        <i class="fas fa-trash-alt mr-1"></i>
+                        <span>Remove</span>
+                    </button>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span>Save</span>
+                        <i class="fas fa-check ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </form> 
+    </div> 
+</div>
+
+{# Add Certification Modal #}
+<div class="modal" id="addCertificationModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <form class="modal-content" id="addCertificationForm">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-certificate text-secondary mr-2"></i>
+                    <span>Add licenses and certifications</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                    
+                    {# Form #}
+                    <div class="mb-3">
+                        <div class="font-weight-bold">Please fill up the required fields</div>
+                        <div class="small font-weight-bold text-danger">
+                            <span>*</span>
+                            <span>Required</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="addCertification_name">
+                            <span>License/Certification Name</span>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="addCertification_name"
+                            name="name"
+                            placeholder="ex. Cisco Certified Network Associate Security"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="addCertification_organization">
+                            <span>Issuing Organization</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="addCertification_organization"
+                            name="organization"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="addCertification_credentialID">
+                            <span>Credential ID</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="addCertification_credentialID"
+                            name="credentialID"
+                        >
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="addExperience_startMonth">Issue Month</label>
+                                <select 
+                                    class="form-control select2"
+                                    name="startMonth" 
+                                    id="addExperience_startMonth"
+                                >
+                                    <option value="">None</option>
+                                    <option value="1">January</option>
+                                    <option value="2">Feburary</option>
+                                    <option value="3">March</option>
+                                    <option value="4">April</option>
+                                    <option value="5">May</option>
+                                    <option value="6">June</option>
+                                    <option value="7">July</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="addExperience_startYear">Issue Year</label>
+                                <input 
+                                    class="form-control"
+                                    id="addExperience_startYear" 
+                                    name="startYear"
+                                    type="number" 
+                                    min="1900" 
+                                    max="2099"
+                                    step="1" 
+                                />
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <span>Save</span>
+                    <i class="fas fa-check ml-1"></i>
+                </button>
+            </div>
+        </form> 
+    </div> 
+</div>
+
+{# Add Award Modal #}
+<div class="modal" id="addAwardModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <form class="modal-content" id="addAwardForm">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-award text-secondary mr-2"></i>
+                    <span>Add honors and awards</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                    
+                    {# Form #}
+                    <div class="mb-3">
+                        <div class="font-weight-bold">Please fill up the required fields</div>
+                        <div class="small font-weight-bold text-danger">
+                            <span>*</span>
+                            <span>Required</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="addAward_name">
+                            <span>Honor/Award Name</span>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="addAward_name"
+                            name="name"
+                            placeholder="ex. Employee of the month"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="addAward_issuer">
+                            <span>Issuer</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="addAward_issuer"
+                            name="organization"
+                        >
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="addAward_startMonth">Issue Month</label>
+                                <select 
+                                    class="form-control select2"
+                                    name="startMonth" 
+                                    id="addAward_startMonth"
+                                >
+                                    <option value="">None</option>
+                                    <option value="1">January</option>
+                                    <option value="2">Feburary</option>
+                                    <option value="3">March</option>
+                                    <option value="4">April</option>
+                                    <option value="5">May</option>
+                                    <option value="6">June</option>
+                                    <option value="7">July</option>
+                                    <option value="8">August</option>
+                                    <option value="9">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="addAward_startYear">Issue Year</label>
+                                <input 
+                                    class="form-control"
+                                    id="addAward_startYear" 
+                                    name="startYear"
+                                    type="number" 
+                                    min="1900" 
+                                    max="2099"
+                                    step="1" 
+                                />
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <span>Save</span>
+                    <i class="fas fa-check ml-1"></i>
                 </button>
             </div>
         </form> 
