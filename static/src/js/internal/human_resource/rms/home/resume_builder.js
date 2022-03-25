@@ -404,6 +404,7 @@ validateForm('#updateApplicantInfoForm', {
             "#resume_applicantContactNumber": applicantInfo.contact_number
         })
         hideModal('#editApplicantInfoModal');
+        toastr.info('Your information has been updated');
         return false
     }
 });
@@ -426,11 +427,12 @@ validateForm('#updateSummaryForm', {
         if(isEmptyOrNull(summary)) {
             setContent('#resume_summary', `
                 <div class="px-5 py-3 text-center font-italic text-muted">This optional section can help you stand out to recruiters. If this section is empty, it will not appear on your resume.</div>
-            `)
+            `);
         } else {
-            setContent('#resume_summary', `<p>${ resume.getSummary() }</p>`)
+            setContent('#resume_summary', `<p>${ resume.getSummary() }</p>`);
         }
         hideModal('#editSummaryModal');
+        toastr.info('Your resume summary has been updated');
         return false;
     }
 });
@@ -470,6 +472,7 @@ validateForm('#addExperienceForm', {
         resume.addExperience(data);
         reloadExperiences();
         hideModal('#addExperienceModal');
+        toastr.success('Your experience has been added');
         return false;
     }
 });
@@ -509,6 +512,10 @@ const reloadExperiences = () => {
         setContent('#resume_experiences', experiencesDOM);
     }
 }
+
+/**
+ * Edit experience
+ */
 
 const editExperience = (experience_id) => {
     const experience = resume.getExperiences(experience_id);
@@ -695,6 +702,10 @@ validateForm('#addCertificationForm', {
 
         reloadCertifications();
 
+        hideModal('#addCertificationModal');
+
+        toastr.success('Your license/certification has been added');
+
         return false;
     }
 });
@@ -724,7 +735,7 @@ const reloadCertifications = () => {
                         <div class="text-muted small">Issued 2021 - Expires at 2022</div>
                     </div>
                     <div>
-                        <div class="btn btn-sm btn-default">
+                        <div class="btn btn-sm btn-default" onclick="editCertification('${ c.certification_id }')">
                             <i class="fas fa-pen"></i>
                         </div>
                     </div>
@@ -737,52 +748,158 @@ const reloadCertifications = () => {
 }
 
 /**
+ * Edit certification
+ */
+
+const editCertification = (certification_id) => {
+    const certification = resume.getCertifications(certification_id);
+    
+    setValue({
+        '#editCertification_certificationID': certification.certification_id,
+        '#editCertification_name': certification.name
+    });
+
+    showModal('#editCertificationModal');
+}
+
+validateForm('#editCertificationForm', {
+    rules: {
+        name: { required: true }
+    },
+    messages: {
+        name: { required: "This is a required field" }
+    },
+    submitHandler: () => {
+        const formData = generateFormData('#editCertificationForm');
+
+        const data = {
+            name: formData.get('name')
+        }
+
+        resume.updateCertification(formData.get('certificationID'), data);
+
+        reloadCertifications();
+
+        hideModal('#editCertificationModal');
+
+        toastr.info('Your license/certification has been updated');
+
+        return false;
+    }
+});
+
+onHideModal('#editCertificationModal', () => resetForm('#editCertificationForm'));
+
+
+/**
  * Add Award
  */
 $('#addAwardBtn').on('click', () => {
     showModal('#addAwardModal');
 });
 
+validateForm('#addAwardForm', {
+    rules: {
+        name: { required: true }
+    },
+    messages: {
+        name: { required: 'Please include the name of your honor or award' }
+    },
+    submitHandler: () => {
+        const formData = generateFormData('#addAwardForm');
+
+        const data = {
+            name: formData.get('name')
+        }
+
+        resume.addAward(data);
+
+        reloadAwards();
+
+        hideModal('#addAwardModal');
+
+        toastr.success('Your award has been added successfully');
+
+        return false;
+    }
+})
+
 onHideModal('#addAwardModal', () => resetForm('#addAwardForm'));
 
-// var resume = new Resume({
-//     first_name: "Jetsun Prince",
-//     middle_name: "Padrogane",
-//     last_name: "Torres",
-//     suffix_name: null,
-//     email: "jetsunprincetorres@gmail.com",
-//     contact_number: "09123456789"
-// }, true);
+const reloadAwards = () => {
+    const awards = resume.getAwards();
 
-// resume.updateApplicantInfo({
-//     first_name: "Joana Monique",
-//     email: "joanamoniquetorres@gmail.com",
-// });
+    if(awards.length === 0) {
+        setContent('#resume_awards', `
+            <div class="px-5 py-3 text-center font-italic text-muted">This section is empty and won’t appear in your resume.</div>
+        `)
+    } else {
+        let awardsDOM = '';
 
-// resume.updateSummary("Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit dolores fuga quam eum deserunt in quibusdam voluptatem officiis a iste ullam reprehenderit recusandae, vero atque necessitatibus repellat eos earum. Deleniti?");
+        awards.forEach(a => {
+            awardsDOM += `
+                <div class="d-flex justify-content-between mb-3">
+                    <div class="mr-3">
+                        <i class="fas fa-award text-secondary"></i>
+                    </div>
+                    <div class="flex-fill">
+                        <div class="font-weight-bold">${ a.name }</div>
+                        <div>Issuer Name Sample 1</div>
+                        <div>Credential ID: 123-456-7890</div>
+                        <div class="text-muted small">Issued 2021 - Expires at 2022</div>
+                    </div>
+                    <div>
+                        <div class="btn btn-sm btn-default" onclick="editAward('${ a.award_id }')">
+                            <i class="fas fa-pen"></i>
+                        </div>
+                    </div>
+                </div>
+            `
+        });
 
-// resume.addExperience({
-//     job_title: "Software Engineer",
-//     company: "Tesla Company",
-//     start_month: 1,
-//     start_year: 2020
-// });
+        setContent('#resume_awards', awardsDOM);
+    }
+}
 
-// resume.addEducation({
-//     school: "Polytechnic University of the Philippines",
-//     degree: "Bachelor of Science in Information Technology"
-// });
+/**
+ * Edit award
+ */
 
-// resume.addCertification({
-//     name: "Information Technology Certificate 1",
-//     organization: "Polytechnic University of the Philippines"
-// });
+const editAward = (award_id) => {
+    const award = resume.getAwards(award_id);
 
-// resume.addSkill("Web Development");
+    setValue({
+        "#editAward_awardID": award.award_id,
+        "#editAward_name": award.name
+    });
 
-// resume.addAward({
-//     name: "Summa Cum Laude",
-//     issuer: "PUP",
-// });
+    showModal('#editAwardModal');
+}
 
-// console.log(resume.getResumeInfo())
+onHideModal('#editAwardModal', () => resetForm('#editAwardForm'));
+
+validateForm('#editAwardForm', {
+    rules: {
+        name: { required: true }
+    },
+    messages: {
+        name: { required: 'Please include the name of your honor or award' }
+    },
+    submitHandler: () => {
+        const formData = generateFormData('#editAwardForm');
+        
+        const data = {
+            name: formData.get('name')
+        }
+
+        resume.updateAward(formData.get('awardID'), data);
+
+        reloadAwards();
+
+        hideModal('#editAwardModal');
+
+        toastr.info('Your award has been updated');
+
+        return false;
+    }
+});
