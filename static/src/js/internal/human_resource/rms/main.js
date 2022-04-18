@@ -61,11 +61,11 @@ const getUserNotifications = (params = {
                                 </div>
                             </div>
                             <div class="flex-fill">
-                                <div class="text-wrap" style="line-height: 1.25">
+                                <div class="text-wrap${ !notif.is_unread ? ' notif-read' : '' }" style="line-height: 1.25">
                                     <span>${ notifType.subtypes[notif.notification_subtype].getContent(notif) }</span>
                                 </div>
                                 <div class="small">
-                                    <i class="small fas fa-clock mr-1"></i>
+                                    <i class="small fas fa-clock"></i>
                                     <span>${ notificationDate() }</span>
                                 </div>
                             </div>

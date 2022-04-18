@@ -130,7 +130,8 @@ class Applicant(Base):
     )
     resume = Column(
         String(255), 
-        nullable = False,unique = True
+        nullable = False,
+        unique = True
     )
     contact_number = Column(
         String(255), 
@@ -237,7 +238,7 @@ class Applicant(Base):
     )
 
     # To Resume
-    resume = relationship(
+    applicant_resume = relationship(
         "Resume",
         back_populates = "resume_owned_by",
         uselist = False
@@ -1637,7 +1638,7 @@ class Resume(Base):
     # From Applicant
     resume_owned_by = relationship(
         "Applicant",
-        back_populates = "resume"
+        back_populates = "applicant_resume"
     )
 
     # ==================================================================================

@@ -281,11 +281,15 @@ const validateForm = (selector = "", validationOptions = { rules: {}, messages: 
 			messages: validationOptions.messages,
 			errorElement: 'div',
 			errorPlacement: (error, element) => {
-				error.addClass('invalid-feedback');
+				error.addClass('invalid-feedback font-weight-bold');
 				element.closest('.form-group').append(error);
 			},
-			highlight: (element) => $(element).addClass('is-invalid'),
-			unhighlight: (element) => $(element).removeClass('is-invalid'),
+			highlight: (element) => {
+				$(element).addClass('is-invalid')
+			},
+			unhighlight: (element) => {
+				$(element).removeClass('is-invalid')
+			},
 			submitHandler: validationOptions.submitHandler
 		});
 	}, false);
