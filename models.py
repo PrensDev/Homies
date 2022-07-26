@@ -290,7 +290,6 @@ class Department(Base):
 
 
 # Employee Model
-# Hiram namin sa core human capital
 class Employee(Base):
     __tablename__ = "employees"
 
@@ -511,7 +510,6 @@ class Employee(Base):
 
 
 # Employment Type Model
-# Hiram namin sa core human capital
 class EmploymentType(Base):
     __tablename__ = "employment_types"
 
@@ -1461,7 +1459,6 @@ class OnboardingTask(Base):
 
 
 # Position Model
-# Hiram namin sa core human capital
 class Position(Base):
     __tablename__ = "positions"
 
