@@ -47,6 +47,28 @@ def create_department(req: schemas.CreateDepartment, db: Session = Depends(get_d
         }
     except Exception as e:
         print(e)
+        return {
+            "error": True,
+        }
+
+
+# Create Many Department
+@router.post("/departments/create-many", status_code = 201)
+def create_many_departments(req: List[schemas.CreateDepartment], db: Session = Depends(get_db)):
+    try:
+        for department in req:
+            new_department = Department(**department.dict())
+            db.add(new_department)
+            db.commit()
+        return {
+            "msg": "Departments has been added"
+        }
+    except Exception as e:
+        print(e)
+        return {
+            "error": True,
+            "details": e
+        }
 
 
 # Get all departments
@@ -112,6 +134,25 @@ def create_sub_department(req: schemas.CreateSubDepartment, db: Session = Depend
         print(e)
 
 
+# Create Many Sub Department
+@router.post("/sub-departments/create-many", status_code = 201)
+def create_many_sub_departments(req: List[schemas.CreateSubDepartment], db: Session = Depends(get_db)):
+    try:
+        for sub_department in req:
+            new_sub_department = SubDepartment(**sub_department.dict())
+            db.add(new_sub_department)
+            db.commit()
+        return {
+            "msg": " Sub-departments has been added"
+        }
+    except Exception as e:
+        print(e)
+        return {
+            "error": True,
+            "details": e
+        }
+
+
 # Get All Sub Department
 @router.get("/sub-departments", response_model = List[schemas.ShowSubDepartment])
 def get_all_sub_departments(db: Session = Depends(get_db)):
@@ -142,7 +183,7 @@ def get_all_sub_departments(sub_department_id: str, db: Session = Depends(get_db
 # =========================================================================
 
 
-# Create Position Per Department
+# Create Position Per Sub-Department
 @router.post("/positions")
 def create_position(req: schemas.CreatePosition, db: Session = Depends(get_db)):
     try:
@@ -155,7 +196,30 @@ def create_position(req: schemas.CreatePosition, db: Session = Depends(get_db)):
             "msg": "A new position has been added"
         }
     except Exception as e:
-        return {"error": e}
+        print(e)
+        return {
+            "error": True,
+            "details": e
+        }
+
+
+# Create Many Positions Per Sub-Department
+@router.post("/positions/create-many")
+def create_many_positions(req: List[schemas.CreatePosition], db: Session = Depends(get_db)):
+    try:
+        for position in req:
+            new_position = Position(**position.dict())
+            db.add(new_position)
+            db.commit()
+        return {
+            "msg": "Positions has been added"
+        }
+    except Exception as e:
+        print(e)
+        return {
+            "error": True,
+            "details": e
+        }
 
 
 # Get All Positions
@@ -205,6 +269,20 @@ def create_employment_type(req: schemas.CreateEmploymentType, db: Session = Depe
         print(e)
 
 
+@router.post("/employment-types/create-many")
+def create_many_employment_types(req: List[schemas.CreateEmploymentType], db: Session = Depends(get_db)):
+    try:
+        for employment_type in req:
+            new_employment_type = EmploymentType(**employment_type.dict())
+            db.add(new_employment_type)
+            db.commit()
+        return {
+            "msg": "Employment types has been added"
+        }
+    except Exception as e:
+        print(e)
+
+
 @router.get("/employment-types")
 def get_employment_types(db: Session = Depends(get_db)):
     try:
@@ -213,8 +291,12 @@ def get_employment_types(db: Session = Depends(get_db)):
         print(e)
 
 
+# =========================================================================
+# INTERNAL USERS
+# =========================================================================
 
-# Create User
+
+# Create Internal User
 @router.post("/internal-users")
 def get_user_info(req: schemas.InternalUser, db: Session = Depends(get_db)):
     try:
@@ -231,9 +313,39 @@ def get_user_info(req: schemas.InternalUser, db: Session = Depends(get_db)):
         print(e)
 
 
+# Create Many Internal User
+@router.post("/internal-users/create-many")
+def create_many_users(req: List[schemas.InternalUser], db: Session = Depends(get_db)):
+    try:
+        for user in req:
+            user.password = Hash.encrypt(user.password)
+            new_internal_user = InternalUser(**user.dict())
+            db.add(new_internal_user)
+            db.commit()
+        return {
+            "msg": "Internal users has been added"
+        }
+    except Exception as e:
+        print(e)
+
+
+# Get All Internal Users
+@router.get("/internal-users")
+def get_all_users(db: Session = Depends(get_db)):
+    try:
+        return db.query(InternalUser).all()
+    except Exception as e:
+        print(e)
+
+
+# =========================================================================
+# ROLES
+# =========================================================================
+
+
 # Create Role
 @router.post("/roles")
-def get_user_info(req: schemas.Role, db: Session = Depends(get_db)):
+def create_role(req: schemas.Role, db: Session = Depends(get_db)):
     try:
         new_role = Role(**req.dict())
         db.add(new_role)
@@ -247,9 +359,38 @@ def get_user_info(req: schemas.Role, db: Session = Depends(get_db)):
         print(e)
 
 
+# Create Many Roles
+@router.post("/roles/create-many")
+def create_many_roles(req: List[schemas.Role], db: Session = Depends(get_db)):
+    try:
+        for role in req:
+            new_role = Role(**role.dict())
+            db.add(new_role)
+            db.commit()
+        return {
+            "msg": "Roles has been added"
+        }
+    except Exception as e:
+        print(e)
+
+
+# Get All Roles
+@router.get("/roles")
+def get_all_role(db: Session = Depends(get_db)):
+    try:
+        return db.query(Role).all()
+    except Exception as e:
+        print(e)
+
+
+# =========================================================================
+# USER ROLE
+# =========================================================================
+
+
 # Create UserRole
 @router.post("/user-roles")
-def get_user_info(req: schemas.UserRole, db: Session = Depends(get_db)):
+def create_user_role(req: schemas.UserRole, db: Session = Depends(get_db)):
     try:
         new_user_role = UserRole(**req.dict())
         db.add(new_user_role)
@@ -258,6 +399,21 @@ def get_user_info(req: schemas.UserRole, db: Session = Depends(get_db)):
         return {
             "data": new_user_role,
             "msg": "A new role has been added"
+        }
+    except Exception as e:
+        print(e)
+
+
+# Create Many UserRole
+@router.post("/user-roles/create-many")
+def create_many_user_role(req: List[schemas.UserRole], db: Session = Depends(get_db)):
+    try:
+        for user_role in req:
+            new_user_role = UserRole(**user_role.dict())
+            db.add(new_user_role)
+            db.commit()
+        return {
+            "msg": "New roles has been added"
         }
     except Exception as e:
         print(e)

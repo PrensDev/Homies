@@ -40,10 +40,12 @@ def login(
 
     # Check if user is existing in database
     if not user_credentials:
+        print('User not found')
         return ACCESS_DENIED_MESSAGE
 
     # Check is user password is matched in database
     if not Hash.verify(req.password, user_credentials.password):
+        print('Invalid password')
         return ACCESS_DENIED_MESSAGE
 
     # If no error, setup cookies and access tokens for giving user previledge
