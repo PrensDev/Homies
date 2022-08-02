@@ -330,7 +330,7 @@ class Employee(Base):
     employment_contract = Column(
         String(255),
         unique = True,
-        nullable = False
+        nullable = True
     )
     status = Column(
         String(255),
@@ -339,7 +339,7 @@ class Employee(Base):
     signed_by = Column(
         String(36),
         ForeignKey("employees.employee_id"),
-        nullable = False
+        nullable = True
     )
     contact_number = Column(
         String(255),
@@ -355,8 +355,13 @@ class Employee(Base):
         ForeignKey("employment_types.employment_type_id"),
         nullable = False
     )
-    status = Column(
+    onboarding_status = Column(
         String(255),
+        nullable = True
+    )
+    updated_by = Column(
+        String(36),
+        ForeignKey("employees.employee_id"),
         nullable = True
     )
     created_at = Column(
@@ -375,39 +380,6 @@ class Employee(Base):
     # ==================================================================================
 
     # From Position
-    onboarding_employee_position = relationship(
-        "Position",
-        back_populates = "onboarding_employees"
-    )
-
-    # From Employee
-    onboarding_employee_signed_by = relationship(
-        "Employee",
-        back_populates = "signed_onboarding_employees",
-        foreign_keys = "Employee.signed_by"
-    )
-    onboarding_employee_updated_by = relationship(
-        "Employee",
-        back_populates = "updated_onboarding_employees",
-        foreign_keys = "Employee.updated_by"
-    )
-
-    # ==================================================================================
-    # Relationship (To other tables/models)
-    # ==================================================================================
-
-    # To OnboardingEmployeeTask
-    onboarding_employee_tasks = relationship(
-        "OnboardingEmployeeTask",
-        back_populates = "onboarding_employee"
-    )
-
-
-    # ==================================================================================
-    # Relationships (From other tables)
-    # ==================================================================================
-    
-    # From Position
     position = relationship(
         "Position",
         back_populates = "employees"
@@ -419,6 +391,17 @@ class Employee(Base):
         back_populates = "employees"
     )
 
+    # From Employee
+    # onboarding_employee_signed_by = relationship(
+    #     "Employee",
+    #     backref = "signed_onboarding_employees",
+    #     foreign_keys = "OnboardingEmployeeTask.assigned_by"
+    # )
+    # onboarding_employee_updated_by = relationship(
+    #     "Employee",
+    #     backref = "updated_onboarding_employees",
+    #     foreign_keys = "OnboardingEmployeeTask.completed_by"
+    # )
 
     # ==================================================================================
     # Relationships (To other tables)
@@ -522,16 +505,18 @@ class Employee(Base):
         foreign_keys = "InterviewQuestion.updated_by"
     )
 
-    # To OnboardingEmployee
+    # To (Onboarding) Employee
     signed_onboarding_employees = relationship(
-        "OnboardingEmployee",
-        back_populates = "onboarding_employee_signed_by",
-        foreign_keys = "OnboardingEmployee.signed_by"
+        "Employee",
+        backref = "onboarding_employee_signed_by",
+        remote_side = "Employee.employee_id",
+        foreign_keys = "Employee.signed_by"
     )
     updated_onboarding_employees = relationship(
-        "OnboardingEmployee",
-        back_populates = "onboarding_employee_updated_by",
-        foreign_keys = "OnboardingEmployee.updated_by"
+        "Employee",
+        backref = "onboarding_employee_updated_by",
+        remote_side = "Employee.employee_id",
+        foreign_keys = "Employee.updated_by"
     )
 
     # To OnboardingTask
@@ -556,6 +541,11 @@ class Employee(Base):
         "OnboardingEmployeeTask",
         back_populates = "onboarding_employee_task_completed_by",
         foreign_keys = "OnboardingEmployeeTask.completed_by"
+    )
+    onboarding_employee_tasks = relationship(
+        "OnboardingEmployeeTask",
+        back_populates = "onboarding_employee",
+        foreign_keys = "OnboardingEmployeeTask.onboarding_employee_id"
     )
 
 
@@ -1280,19 +1270,18 @@ class OnboardingEmployeeTask(Base):
     # Relationships (From other tables/models)
     # ==================================================================================
 
-    # From OnboardingEmployee
-    onboarding_employee = relationship(
-        "Employee",
-        back_populates = "onboarding_employee_tasks"
-    )
-
     # From OnboardingTask
     onboarding_task = relationship(
         "OnboardingTask",
         back_populates = "assigned_tasks"
     )
-    
-    # From Employee
+
+    # From (Onboarding) Employee
+    onboarding_employee = relationship(
+        "Employee",
+        back_populates = "onboarding_employee_tasks",
+        foreign_keys = "OnboardingEmployeeTask.onboarding_employee_id"
+    )
     onboarding_employee_task_assigned_by = relationship(
         "Employee",
         back_populates = "assigned_onboarding_employee_tasks",
