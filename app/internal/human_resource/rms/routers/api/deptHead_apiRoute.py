@@ -533,32 +533,62 @@ def add_onboarding_employee(
                 raise HTTPException(status_code=404, detail = APPLICANT_NOT_FOUND_RESPONSE)
             else:
 
-                # Trace and get position
-                job_post = db.query(JobPost).filter(JobPost.job_post_id == applicant.job_post_id).first()
-                manpower_request = db.query(ManpowerRequest).filter(ManpowerRequest.manpower_request_id == job_post.manpower_request_id).first()
-                position = db.query(Position).filter(Position.position_id == manpower_request.position_id).first()
+                job_post = db.query(JobPost).filter(
+                    JobPost.job_post_id == applicant.job_post_id
+                ).first()
+
+                manpower_request = db.query(ManpowerRequest).filter(
+                    ManpowerRequest.manpower_request_id == job_post.manpower_request_id
+                ).first()
+
+                position = db.query(Position).filter(
+                    Position.position_id == manpower_request.position_id
+                ).first()
+
+                job_employment_type = db.query(EmploymentType).join(ManpowerRequest).filter(
+                    ManpowerRequest.employment_type_id == EmploymentType.employment_type_id
+                ).join(JobPost).filter(
+                    ManpowerRequest.manpower_request_id == JobPost.manpower_request_id
+                ).join(Applicant).filter(
+                    JobPost.job_post_id == Applicant.job_post_id,
+                    Applicant.applicant_id == applicant.applicant_id
+                ).first()
+
+                # New Internal User
+                new_user = InternalUser(
+                    email = applicant.email,
+                    password = "null"
+                )
+
+                # Add new onboarding employee to database
+                db.add(new_user)
+                db.flush()
+                db.refresh(new_user)
 
                 # New onboarding employee
-                new_onboarding_employee = OnboardingEmployee(
+                new_onboarding_employee = Employee(
+                    user_id = new_user.id,
                     first_name = applicant.first_name,
                     middle_name = applicant.middle_name,
                     last_name = applicant.last_name,
-                    suffix_name = applicant.suffix_name,
+                    extension_name = applicant.suffix_name,
                     contact_number = applicant.contact_number,
-                    email = applicant.email,
                     position_id = position.position_id,
                     employment_contract = req.employment_contract,
-                    status = "Pending",
+                    employment_type_id = job_employment_type.employment_type_id,
+                    status = "Inactive",
+                    onboarding_status = "Pending",
                     signed_by = user_data.employee_id
                 )
 
+                db.add(new_onboarding_employee)
+
                 # Update Applicant Status
                 applicantQuery.update({"status": "Contract signed"})
-
-                # Add new onboarding employee to database
-                db.add(new_onboarding_employee)
                 db.commit()
+
                 db.refresh(new_onboarding_employee)
+
                 return new_onboarding_employee
     except Exception as e:
         print(e)
@@ -586,10 +616,10 @@ def get_all_onboarding_employees(
             if not user_department:
                 raise HTTPException(status=404, detail=DEPARTMENT_NOT_FOUND_RESPONSE)
             else:
-                return db.query(OnboardingEmployee).filter(
-                    OnboardingEmployee.status == "Onboarding"
+                return db.query(Employee).filter(
+                    Employee.onboarding_status == "Onboarding"
                 ).join(Position).filter(
-                    Position.position_id == OnboardingEmployee.position_id
+                    Position.position_id == Employee.position_id
                 ).join(SubDepartment).filter(
                     SubDepartment.sub_department_id == Position.sub_department_id
                 ).join(Department).filter(
@@ -622,10 +652,10 @@ def onboarding_employees_analytics(
             if not user_department:
                 raise HTTPException(status=404, detail=DEPARTMENT_NOT_FOUND_RESPONSE)
             else:
-                total = db.query(OnboardingEmployee).filter(
-                    OnboardingEmployee.status == "Onboarding"
+                total = db.query(Employee).filter(
+                    Employee.onboarding_status == "Onboarding"
                 ).join(Position).filter(
-                    Position.position_id == OnboardingEmployee.position_id
+                    Position.position_id == Employee.position_id
                 ).join(SubDepartment).filter(
                     SubDepartment.sub_department_id == Position.sub_department_id
                 ).join(Department).filter(
@@ -635,6 +665,7 @@ def onboarding_employees_analytics(
                 
                 return {"total": total}
     except Exception as e:
+        print("Error /onboarding-employees/analytics")
         print(e)
 
 
@@ -647,8 +678,8 @@ def get_one_onboarding_employee(
 ):
     try:
         if isAuthorized(user_data, AUTHORIZED_SUBSYSTEM, AUTHORIZED_ROLE):
-            onboarding_employee = db.query(OnboardingEmployee).filter(
-                OnboardingEmployee.onboarding_employee_id == onboarding_employee_id
+            onboarding_employee = db.query(Employee).filter(
+                Employee.employee_id == onboarding_employee_id
             ).first()
 
             if not onboarding_employee:
@@ -656,7 +687,9 @@ def get_one_onboarding_employee(
             else:
                 return onboarding_employee
     except Exception as e:
+        print("Error /onboarding-employees/:onboarding_employee_id")
         print(e)
+
 
 
 # ====================================================================
@@ -677,8 +710,8 @@ def get_all_onboarding_employee_tasks(
 ):
     try:
         if isAuthorized(user_data, AUTHORIZED_SUBSYSTEM, AUTHORIZED_ROLE):
-            onboarding_employee = db.query(OnboardingEmployee).filter(
-                OnboardingEmployee.onboarding_employee_id == onboarding_employee_id
+            onboarding_employee = db.query(Employee).filter(
+                Employee.employee_id == onboarding_employee_id
             ).first()
             
             if not onboarding_employee:

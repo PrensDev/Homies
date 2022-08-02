@@ -70,7 +70,7 @@ ifSelectorExist('#addOnboardingEmployeeForm', () => {
     GET_ajax(`${ ROUTE.API.DM }onboarding-employees/${ onboardingEmployeeID }`, {
         success: result => {
 
-            const onboardingEmployeePosition = result.onboarding_employee_position;
+            const onboardingEmployeePosition = result.position;
 
             // Set Position
             setContent('#position', onboardingEmployeePosition.name);
@@ -82,7 +82,7 @@ ifSelectorExist('#addOnboardingEmployeeForm', () => {
                 '#lastName': result.last_name,
                 '#suffixName': result.suffix_name,
                 '#contactNumber': result.contact_number,
-                '#email': result.email
+                '#email': result.user_credentials.email
             });
 
             $('#onboardingEmployeeFormLoader').remove();

@@ -1,5 +1,5 @@
 # Import Packages
-from sqlalchemy import func, and_, cast, text, Date
+from sqlalchemy import func, and_, cast, not_, text, Date
 from typing import List, Optional
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
@@ -34,12 +34,15 @@ def get_user_info(
 ):
     try:
         if isAuthorized(user_data, AUTHORIZED_SUBSYSTEM, AUTHORIZED_ROLE):
-            user_info = db.query(Employee).filter(Employee.employee_id == user_data.employee_id).first()
+            user_info = db.query(Employee).filter(
+                Employee.employee_id == user_data.employee_id
+            ).first()
             if not user_info:
                 raise HTTPException(status_code = 404, detail = {"message": "Employee does not exist"})
             else:
                 return user_info
     except Exception as e:
+        print("Error /info")
         print(e)
 
 
@@ -64,6 +67,7 @@ def get_notifications(
                 RecruitmentNotification.created_at.desc()
             ).all()
     except Exception as e:
+        print("Error /notifications")
         print(e)
 
 # Unread notification
@@ -411,8 +415,11 @@ def department_positions(
             if not user_sub_department:
                 raise HTTPException(status_code=404, detail=SUB_DEPARTMENT_NOT_FOUND_RESPONSE)
             else:
-                return db.query(Position).join(SubDepartment).filter(SubDepartment.sub_department_id == user_sub_department.sub_department_id).all()
+                return db.query(Position).join(SubDepartment).filter(
+                    SubDepartment.sub_department_id == user_sub_department.sub_department_id
+                ).all()
     except Exception as e:
+        print("Error /positions")
         print(e)
 
 
@@ -435,6 +442,7 @@ def get_all_employment_types(
         if isAuthorized(user_data, AUTHORIZED_SUBSYSTEM, AUTHORIZED_ROLE):
             return db.query(EmploymentType).all()
     except Exception as e:
+        print("Error /employment-types")
         print(e)
 
 
@@ -729,19 +737,22 @@ def get_all_hired_applicants(
             if not user_sub_department:
                 raise HTTPException(status=404, detail=SUB_DEPARTMENT_NOT_FOUND_RESPONSE)
 
-            return db.query(OnboardingEmployee).filter(
-                OnboardingEmployee.status == "Pending"
+            hired_applicants = db.query(Employee).filter(
+                Employee.onboarding_status == "Pending"
             ).join(Position).filter(
-                OnboardingEmployee.position_id == Position.position_id
+                Employee.position_id == Position.position_id
             ).join(SubDepartment).filter(
                 Position.sub_department_id == SubDepartment.sub_department_id, 
                 SubDepartment.sub_department_id ==  user_sub_department.sub_department_id
             ).all()
+
+            return hired_applicants
     except Exception as e:
+        print("Error /notifications")
         print(e)
 
 
-# Hired applicants ccount
+# Hired applicants count
 @router.get("/hired-applicants/analytics")
 def hired_applicants_count(
     db: Session = Depends(get_db),
@@ -758,10 +769,10 @@ def hired_applicants_count(
                 Employee.employee_id == user_data.employee_id
             ).first()
             
-            hired_applicants_count = db.query(OnboardingEmployee).filter(
-                OnboardingEmployee.status == "Pending"
+            hired_applicants_count = db.query(Employee).filter(
+                Employee.onboarding_status == "Pending"
             ).join(Position).filter(
-                OnboardingEmployee.position_id == Position.position_id
+                Employee.position_id == Position.position_id
             ).join(SubDepartment).filter(
                 Position.sub_department_id == SubDepartment.sub_department_id, 
                 SubDepartment.sub_department_id ==  user_sub_department.sub_department_id
@@ -769,6 +780,7 @@ def hired_applicants_count(
 
             return {"hired_applicants": hired_applicants_count}
     except Exception as e:
+        print("Error /hired-applicants/analytics")
         print(e)
 
 
@@ -790,11 +802,11 @@ def get_all_hired_applicants(
                 Employee.employee_id == user_data.employee_id
             ).first()
 
-            onboarding_employee = db.query(OnboardingEmployee).filter(
-                OnboardingEmployee.onboarding_employee_id == onboarding_employee_id,
-                OnboardingEmployee.status == "Pending"
+            onboarding_employee = db.query(Employee).filter(
+                Employee.employee_id == onboarding_employee_id,
+                Employee.onboarding_status == "Pending"
             ).join(Position).filter(
-                OnboardingEmployee.position_id == Position.position_id
+                Employee.position_id == Position.position_id
             ).join(SubDepartment).filter(
                 Position.sub_department_id == SubDepartment.sub_department_id, 
                 SubDepartment.sub_department_id ==  user_sub_department.sub_department_id
@@ -809,7 +821,7 @@ def get_all_hired_applicants(
 
 
 # ====================================================================
-# ONBOARDING EMPLOYEE
+# ONBOARDING EMPLOYEES
 # ====================================================================
 
 
@@ -838,14 +850,15 @@ def get_all_onboarding_employees(
             if not user_sub_department:
                 raise HTTPException(status_code=404, detail=SUB_DEPARTMENT_NOT_FOUND_RESPONSE)
             else:
-                return db.query(OnboardingEmployee).filter(
-                    OnboardingEmployee.status == "Onboarding"
+                return db.query(Employee).filter(
+                    Employee.onboarding_status == "Onboarding"
                 ).join(Position).filter(
-                    Position.position_id == OnboardingEmployee.position_id
+                    Position.position_id == Employee.position_id
                 ).join(SubDepartment).filter(
                     SubDepartment.sub_department_id == user_sub_department.sub_department_id
                 ).all()
     except Exception as e:
+        print("Error /onboarding-employees")
         print(e)
 
 
@@ -869,17 +882,20 @@ def onboarding_employees_analytics(
             if not user_sub_department:
                 raise HTTPException(status_code=404, detail="Deparment does not exist")
             else:
-                total = db.query(OnboardingEmployee).filter(
-                    OnboardingEmployee.status == "Onboarding"
+                total = db.query(Employee).filter(
+                    Employee.onboarding_status == "Onboarding"
                 ).join(Position).filter(
-                    Position.position_id == OnboardingEmployee.position_id
+                    Position.position_id == Employee.position_id
                 ).join(SubDepartment).filter(
                     SubDepartment.sub_department_id == user_sub_department.sub_department_id
                 ).count()
                 
                 # Return the total number of onboarding employees
-                return {"total": total}
+                return {
+                    "total": total
+                }
     except Exception as e:
+        print("Error /onboarding-employees/analytics")
         print(e)
 
 
@@ -892,8 +908,8 @@ def get_one_onboarding_employee(
 ):
     try:
         if isAuthorized(user_data, AUTHORIZED_SUBSYSTEM, AUTHORIZED_ROLE):
-            onboarding_employee = db.query(OnboardingEmployee).filter(
-                OnboardingEmployee.onboarding_employee_id == onboarding_employee_id
+            onboarding_employee = db.query(Employee).filter(
+                Employee.employee_id == onboarding_employee_id
             ).first()
 
             if not onboarding_employee:
@@ -914,7 +930,7 @@ def update_onboarding_employee(
 ):
     try:
         if isAuthorized(user_data, AUTHORIZED_SUBSYSTEM, AUTHORIZED_ROLE):
-            onboarding_employee = db.query(OnboardingEmployee).filter(OnboardingEmployee.onboarding_employee_id == onboarding_employee_id)
+            onboarding_employee = db.query(Employee).filter(Employee.employee_id == onboarding_employee_id)
             if not onboarding_employee.first():
                 raise HTTPException(status_code=404, detail=ONBOARDING_EMPLOYEE_NOT_FOUND)
             else:

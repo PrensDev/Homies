@@ -38,14 +38,14 @@ initDataTable('#hiredApplicantsDT', {
                 });
                 return `
                     <div>${ applicantFullName }</div>
-                    ${ TEMPLATE.SUBTEXT(data.email) }
+                    ${ TEMPLATE.SUBTEXT(data.user_credentials.email) }
                     ${ TEMPLATE.SUBTEXT(data.contact_number) }
                 `
             }
         },
 
         // Position
-        { data: 'onboarding_employee_position.name' },
+        { data: 'position.name' },
 
         // Contract Signed at
         {
@@ -63,7 +63,7 @@ initDataTable('#hiredApplicantsDT', {
         {
             data: null,
             render: data => {
-                const onboardingEmployeeID = data.onboarding_employee_id;
+                const onboardingEmployeeID = data.employee_id;
 
                 return TEMPLATE.DT.OPTIONS(`
                     <a 
@@ -114,6 +114,8 @@ const viewApplicantDetails = (onboardingEmployeeID) => {
     GET_ajax(`${ ROUTE.API.DM }hired-applicants/${ onboardingEmployeeID }`, {
         success: result => {
 
+            console.log(result);
+
             /** APPLICANT DETAILS */
             
             // Set Applicant Full Name
@@ -125,7 +127,7 @@ const viewApplicantDetails = (onboardingEmployeeID) => {
                     suffixName: result.suffix_name
                 }),
                 "#applicantContactNumber": result.contact_number,
-                "#applicantEmail": result.email
+                "#applicantEmail": ''
             });
 
             // Set Resume Link

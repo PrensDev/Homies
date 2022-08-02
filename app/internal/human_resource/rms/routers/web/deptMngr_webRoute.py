@@ -293,10 +293,11 @@ def render(
     ).first()
     
     # Check if onboarding employee is existing in database
-    onboarding_employee = db.query(OnboardingEmployee).filter(
-        OnboardingEmployee.onboarding_employee_id == onboarding_employee_id
+    onboarding_employee = db.query(Employee).filter(
+        Employee.employee_id == onboarding_employee_id,
+        Employee.onboarding_status == 'Pending',
     ).join(Position).filter(
-        OnboardingEmployee.position_id == Position.position_id
+        Employee.position_id == Position.position_id
     ).join(SubDepartment).filter(
         Position.sub_department_id == SubDepartment.sub_department_id, 
         SubDepartment.sub_department_id ==  user_sub_department.sub_department_id
@@ -371,11 +372,11 @@ def render(
     ).first()
 
     # Check if onboarding employee is existing in database
-    onboarding_employee = db.query(OnboardingEmployee).filter(
-        OnboardingEmployee.onboarding_employee_id == onboarding_employee_id,
-        OnboardingEmployee.status == "Onboarding",
+    onboarding_employee = db.query(Employee).filter(
+        Employee.employee_id == onboarding_employee_id,
+        Employee.status == "Onboarding",
     ).join(Position).filter(
-        OnboardingEmployee.position_id == Position.position_id
+        Employee.position_id == Position.position_id
     ).join(SubDepartment).filter(
         Position.sub_department_id == SubDepartment.sub_department_id, 
         SubDepartment.sub_department_id ==  user_sub_department.sub_department_id

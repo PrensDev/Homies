@@ -4,7 +4,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 from app.internal.human_resource.rms.schemas.user_schemas import ShowUserInfo
 from app.internal.human_resource.rms.schemas.main_schemas \
-    import Position, SubDeparment, Department, ShowEmploymentType, ShowPosition
+    import Position, SubDeparment, Department, ShowEmploymentType, ShowPosition, User
 
 
 # Show Department For Manpower Request
@@ -181,17 +181,16 @@ class ShowOnboardingTask(OnboardingTask):
 
 # OnboardingEmployee
 class OnboardingEmployee(BaseModel):
-    onboarding_employee_id: str
+    employee_id: str
     first_name: str
     middle_name: Optional[str]
     last_name: str
-    suffix_name: Optional[str]
-    onboarding_employee_position: ShowPosition
+    extension_name: Optional[str]
+    position: ShowPosition
     contact_number: str
-    email: str
-    employment_contract: str
+    onboarding_status: Optional[str]
+    employment_contract: Optional[str]
     employment_start_date: Optional[date]
-    onboarding_employee_signed_by: ShowUserInfo
     created_at: datetime
     updated_at: Optional[datetime]
 
@@ -203,8 +202,19 @@ class CreateOnboardingEmployeeTask(BaseModel):
     end_at: datetime
 
 
+class ShowUserCredentials(BaseModel):
+    id: str
+    email: str
+    
+    class Config():
+        orm_mode = True
+
+
 # Show Hired Applicant
 class ShowHiredApplicant(OnboardingEmployee):
+    # onboarding_employee_signed_by: Optional[ShowUserInfo]
+    user_credentials: ShowUserCredentials
+
     class Config():
         orm_mode = True
 
